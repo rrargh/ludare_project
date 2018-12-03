@@ -14,8 +14,22 @@ class ListCreateTodosView(generics.ListCreateAPIView):
     """
     Provides GET and POST method handlers
     """
-    queryset = Todos.objects.all()
     serializer_class = TodosSerializer
+
+    def get_queryset(self):
+        queryset = Todos.objects.all()
+        state = self.request.query_params.get("state", None)
+        due_date = self.request.query_params.get("due_date", None)
+        # Narrow results to chosen state
+        if state in ["T", "I", "D"]:
+            queryset = queryset.filter(state=state)
+        # Sort results by due date
+        if due_date == "asc":
+            queryset = queryset.order_by("due_date")
+        elif due_date == "desc":
+            queryset = queryset.order_by("-due_date")
+        return queryset
+
 
     @validate_request_data
     def post(self, request, *args, **kwargs):
