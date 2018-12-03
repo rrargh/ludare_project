@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import date
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
@@ -7,7 +7,7 @@ from rest_framework.views import status
 from .models import Todos
 from .serializers import TodosSerializer
 
-date_today = datetime.now()
+date_today = date(2018, 12, 25)
 
 # Create your tests here.
 
