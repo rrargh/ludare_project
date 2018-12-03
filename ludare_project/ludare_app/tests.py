@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.views import status
@@ -59,7 +60,7 @@ class BaseViewTest(APITestCase):
                         "version": kwargs["version"]
                     }
                 ),
-                data=json.dumps(kwargs["data"]),
+                data=json.dumps(kwargs["data"], cls=DjangoJSONEncoder),
                 content_type='application/json'
             )
         elif kind == "put":
@@ -71,7 +72,7 @@ class BaseViewTest(APITestCase):
                         "pk": kwargs["id"]
                     }
                 ),
-                data=json.dumps(kwargs["data"]),
+                data=json.dumps(kwargs["data"], cls=DjangoJSONEncoder),
                 content_type='application/json'
             )
         else:
@@ -127,7 +128,7 @@ class GetAllTodosTest(BaseViewTest):
         """
         # hit the API endpoint
         response = self.client.get(
-            reverse("todos-all", kwargs={"version": "v1"})
+            reverse("todos-list-create", kwargs={"version": "v1"})
         )
         # fetch the data from db
         expected = Todos.objects.all()
