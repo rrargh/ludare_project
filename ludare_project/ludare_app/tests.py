@@ -6,6 +6,7 @@ from rest_framework.views import status
 from .models import Todos
 from .serializers import TodosSerializer
 
+date_today = datetime.now()
 
 # Create your tests here.
 
@@ -16,17 +17,17 @@ class TodosModelTest(APITestCase):
     def setUp(self):
         self.my_todo = Todos.objects.create(
             state="T",
-            due_date=datetime.now(),
+            due_date=date_today,
             text="Call Mom"
         )
 
-    def test_song(self):
+    def test_todo(self):
         """"
         This test ensures that the todo created in the setup
         exists
         """
         self.assertEqual(self.my_todo.state, "T")
-        self.assertEqual(self.my_todo.due_date, datetime.now())
+        self.assertEqual(self.my_todo.due_date, date_today)
         self.assertEqual(self.my_todo.text, "Call Mom")
         self.assertEqual(str(self.my_todo), "Call Mom")
 
@@ -100,12 +101,12 @@ class BaseViewTest(APITestCase):
 
     def setUp(self):
         # add test data
-        self.create_todo("T", datetime.now(), "buy eggs")
-        self.create_todo("I", datetime.now(), "buy milk")
-        self.create_todo("D", datetime.now(), "buy cheese")
+        self.create_todo("T", date_today, "buy eggs")
+        self.create_todo("I", date_today, "buy milk")
+        self.create_todo("D", date_today, "buy cheese")
         self.valid_data = {
             "state": "T",
-            "due_date": datetime.now(),
+            "due_date": date_today,
             "text": "test text"
         }
         self.invalid_data = {
