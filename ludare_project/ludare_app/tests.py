@@ -4,12 +4,19 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.views import status
+from urllib.parse import urlencode
 from .models import Todos
 from .serializers import TodosSerializer
 
 date_today = date(2018, 12, 25)
+date_yesterday= date(2018, 12, 24)
+date_tomorrow = date(2018, 12, 26)
 
 # Create your tests here.
+
+# encode URL with a query string
+def url_with_querystring(path, **kwargs):
+    return path + "?" + urlencode(kwargs)
 
 # tests for models
 
@@ -108,9 +115,12 @@ class BaseViewTest(APITestCase):
 
     def setUp(self):
         # add test data
-        self.create_todo("T", date_today, "buy eggs")
+        self.create_todo("T", date_tomorrow, "buy eggs")
         self.create_todo("I", date_today, "buy milk")
-        self.create_todo("D", date_today, "buy cheese")
+        self.create_todo("D", date_yesterday, "buy cheese")
+        self.create_todo("T", date_tomorrow, "eat breakfast")
+        self.create_todo("I", date_today, "eat dinner")
+        self.create_todo("D", date_yesterday, "eat lunch")
         self.valid_data = {
             "state": "T",
             "due_date": "2018-12-25",
@@ -142,6 +152,60 @@ class GetAllTodosTest(BaseViewTest):
         self.assertEqual(response.data, serialized.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # test filtering by state "to do"
+        url_with_filtering = url_with_querystring(
+            reverse("todos-list-create", kwargs={"version": "v1"}),
+            state="T"
+        )
+        response = self.client.get(url_with_filtering)
+        expected = Todos.objects.filter(state="T")
+        serialized = TodosSerializer(expected, many=True)
+        self.assertEqual(response.data, serialized.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test filtering by state "in progress"
+        url_with_filtering = url_with_querystring(
+            reverse("todos-list-create", kwargs={"version": "v1"}),
+            state="I"
+        )
+        response = self.client.get(url_with_filtering)
+        expected = Todos.objects.filter(state="I")
+        serialized = TodosSerializer(expected, many=True)
+        self.assertEqual(response.data, serialized.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test filtering by state "done"
+        url_with_filtering = url_with_querystring(
+            reverse("todos-list-create", kwargs={"version": "v1"}),
+            state="D"
+        )
+        response = self.client.get(url_with_filtering)
+        expected = Todos.objects.filter(state="D")
+        serialized = TodosSerializer(expected, many=True)
+        self.assertEqual(response.data, serialized.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test ordering by ascending due date
+        url_with_filtering = url_with_querystring(
+            reverse("todos-list-create", kwargs={"version": "v1"}),
+            ordering="due_date"
+        )
+        response = self.client.get(url_with_filtering)
+        expected = Todos.objects.order_by("due_date")
+        serialized = TodosSerializer(expected, many=True)
+        self.assertEqual(response.data, serialized.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test ordering by descending due date
+        url_with_filtering = url_with_querystring(
+            reverse("todos-list-create", kwargs={"version": "v1"}),
+            ordering="-due_date"
+        )
+        response = self.client.get(url_with_filtering)
+        expected = Todos.objects.order_by("-due_date")
+        serialized = TodosSerializer(expected, many=True)
+        self.assertEqual(response.data, serialized.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class GetASingleTodosTest(BaseViewTest):
 
