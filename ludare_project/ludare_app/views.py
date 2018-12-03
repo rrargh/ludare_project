@@ -55,6 +55,7 @@ class TodosDetailView(generics.RetrieveUpdateDestroyAPIView):
             my_todo = self.queryset.get(pk=kwargs["pk"])
             serializer = TodosSerializer()
             updated_todo = serializer.update(my_todo, request.data)
+            return Response(TodosSerializer(updated_todo).data)
         except Todos.DoesNotExist:
             return Response(
                 data={

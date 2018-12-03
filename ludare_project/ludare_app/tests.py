@@ -60,7 +60,10 @@ class BaseViewTest(APITestCase):
                         "version": kwargs["version"]
                     }
                 ),
-                data=json.dumps(kwargs["data"], cls=DjangoJSONEncoder),
+                data=json.dumps(
+                    kwargs["data"],
+                    cls=DjangoJSONEncoder
+                ),
                 content_type='application/json'
             )
         elif kind == "put":
@@ -72,7 +75,10 @@ class BaseViewTest(APITestCase):
                         "pk": kwargs["id"]
                     }
                 ),
-                data=json.dumps(kwargs["data"], cls=DjangoJSONEncoder),
+                data=json.dumps(
+                    kwargs["data"],
+                    cls=DjangoJSONEncoder
+                ),
                 content_type='application/json'
             )
         else:
@@ -107,12 +113,12 @@ class BaseViewTest(APITestCase):
         self.create_todo("D", date_today, "buy cheese")
         self.valid_data = {
             "state": "T",
-            "due_date": date_today,
+            "due_date": "2018-12-25",
             "text": "test text"
         }
         self.invalid_data = {
             "state": "",
-            "due_date": None,
+            "due_date": "",
             "text": ""
         }
         self.valid_todo_id = 1
