@@ -15,6 +15,7 @@ date_tomorrow = date(2018, 12, 26)
 # Create your tests here.
 
 # encode URL with a query string
+# https://stackoverflow.com/questions/2778247/how-do-i-construct-a-django-reverse-url-using-query-args/5341769#5341769
 def url_with_querystring(path, **kwargs):
     return path + "?" + urlencode(kwargs)
 
