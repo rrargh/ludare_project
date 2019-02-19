@@ -15,10 +15,9 @@ https://github.com/kasulani/drf_tutorial
 * Django 2.1
 
 ## Installation guide
-This guide assumes you are using Ubuntu 18.04
-Install basic requirements such as Python 3, Git and Vim
+This guide assumes you are using Ubuntu 18.04.  Install basic requirements such as Python 3, Git and Vim
 ```
-sudo apt install python3 git vim
+sudo apt install git vim python3 python3-distutils
 ```
 
 Install Pip for Python 3 by first getting then running get-pip.py:
